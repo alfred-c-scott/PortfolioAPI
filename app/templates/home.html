@@ -1,0 +1,102 @@
+<!-- home.html -->
+{% extends "base.html" %}
+
+{% block title %} - Home{% endblock %}
+
+{% block content %}
+    <br/>
+    <br/>
+    <br/>
+    <div class="container">
+    <div class="row">
+        <div class="col text-center">
+            <h1>Alfred C Scott</h1>
+
+            <!-- button type="button" class="btn btn-success btn-sm mt-2">Contact</button -->
+            <!-- Button trigger modal -->
+<button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal">Contact</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Contact Information</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+  <div class="d-grid gap-2">
+    <a class="btn btn-success" href="tel:8594336777">(859) 433-6777</a>
+    <a class="btn btn-success" href="mailto:alfred.scott@protonmail.com">alfred.scott@protonmail.com</a>
+    <a class="btn btn-success" href="https://github.com/alfred-c-scott" target="_blank">github.com/alfred-c-scott</a>
+  </div>
+</div>
+        <!--div class="modal-footer">
+          <button type="button" class="btn btn-danger btn-sm" data-bs-dismiss="modal">Close</button>
+        </div-->
+    </div>
+  </div>
+</div>
+        </div>
+    </div>
+
+    <br/><br/>
+
+    <div class="container">
+        <div class="row">
+            <h3>Professional Summary</h3><hr/>
+        </div>
+    </div>
+
+    <br/><br/>
+
+
+    <div class="container">
+        <div class="row">
+            <h3>Certifications</h3><hr/>
+            <div class="col">
+                <ul>
+                    <li>Red Hat Certified System Administrator</li>
+                    <li>Comptia Net+</li>
+                    <li>Comptia Sec+</li>
+                    <li>AWS Cloud Practitioner</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <br/><br/>
+
+
+    <div class="container">
+        <div class="row">
+            <h3>Skills and Competencies</h3><hr/>
+            <div class="col">
+                <ul>
+                    <li>C++</li>
+                    <li>Python</li>
+                    <li>html</li>
+                    <li>Fastapi</li>
+                    <li>SQL</li>
+                    <li>SQLAlchemy</li>
+                    <li>Alembic</li>
+                </ul>
+            </div>
+            <div class="col">
+                <ul>
+                    <li>Linux/Unix</li>
+                    <li>Proxmox</li>
+                    <li>Windows</li>
+                    <li>Ubiquiti/Unifi</li>
+                    <li>pfSense</li>
+                </ul>
+            </div>
+            <div class="col">
+                Column
+            </div>
+            <div class="col">
+                Column
+            </div>
+        </div>
+    </div>
+{% endblock %}

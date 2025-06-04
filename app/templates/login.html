@@ -1,0 +1,58 @@
+<!-- app/templates/login.html -->
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h2 class="text-center mb-4">Staff Login</h2>
+
+        {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+        {% endif %}
+        {% if request.query_params.get('expired') %}
+            <div class="alert alert-danger" role="alert">
+                Session expired. Please log in again.
+            </div>
+        {% endif %}
+        {% if request.query_params.get('invalid') %}
+            <div class="alert alert-danger" role="alert">
+                Invalid session detected. Please log in again.
+            </div>
+        {% endif %}
+
+        <form method="POST" action="/login">
+            <div class="mb-3">
+                <label for="username" class="form-label">Email</label>
+                <input type="email"
+                       class="form-control"
+                       id="username"
+                       name="username"
+                       required
+                       placeholder="Enter your email">
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password"
+                       class="form-control"
+                       id="password"
+                       name="password"
+                       required
+                       placeholder="Enter your password">
+            </div>
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Sign In</button>
+            </div>
+        </form>
+
+        <div class="text-center mt-3">
+            <a href="#" class="text-muted">Forgot password?</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

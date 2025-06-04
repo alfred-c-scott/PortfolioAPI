@@ -1,0 +1,3 @@
+[flake8]
+exclude = .venv, .git, __pycache__, alembic.ini, alembic/versions, dev/questions.py, __init__.py
+max-line-length = 120

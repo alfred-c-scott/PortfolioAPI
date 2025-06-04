@@ -1,0 +1,22 @@
+.venv
+
+__pycache__
+*/__pycache__
+*/*/__pycache__
+*/*/*/__pycache__
+*/*/*/*/__pycache__
+
+.env
+
+/scratch
+
+dev/customers.json
+# dev/kill.sh
+# dev/run.sh
+
+.vscode/
+
+tree.txt
+# .dockerignore
+# Dockerfile
+# docker-compose.yml
