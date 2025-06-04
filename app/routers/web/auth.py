@@ -49,7 +49,7 @@ async def login(request: Request,
 
     data = schemas.StaffTokenData.model_validate(staff).model_dump()
 
-    access_token = oauth2.create_api_token(data=data)
+    access_token = oauth2.create_web_token(data=data)
 
     response = RedirectResponse(url="/staff", status_code=status.HTTP_302_FOUND)
 

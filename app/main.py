@@ -12,7 +12,7 @@ from fastapi.exceptions import RequestValidationError
 from sqlalchemy.orm import Session
 
 # local
-from app.middleware.auth import TokenExpirationMiddleware
+# from app.middleware.auth import TokenExpirationMiddleware
 
 from app.routers.api import auth as api_auth
 from app.routers.api import locations as api_locations
@@ -38,7 +38,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.add_middleware(TokenExpirationMiddleware)
+# app.add_middleware(TokenExpirationMiddleware)
 
 app.include_router(api_auth.router)
 app.include_router(api_locations.router)

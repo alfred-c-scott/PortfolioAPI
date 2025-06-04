@@ -5,7 +5,6 @@ from fastapi.templating import Jinja2Templates
 from fastapi.requests import Request
 from fastapi.responses import HTMLResponse
 
-
 # local
 from app import oauth2
 
@@ -22,5 +21,20 @@ async def staff(request: Request,
                 current_user: int = Depends(oauth2.web_staff)):
     print(current_user)
     # print(request.headers)
-    return templates.TemplateResponse("staff.html", {"request": request,
-                                      "staff": current_user})
+
+    context = dict()
+    context['request'] = request
+    context['staff'] = current_user['token_data']
+
+    response = templates.TemplateResponse("staff.html", context)
+
+    response.set_cookie(
+        key="access_token",
+        value=current_user['new_token'],  # This is the refreshed token from web_staff
+        httponly=True,
+        path="/",
+        secure=False,  # For local testing
+        samesite="Lax"
+    )
+
+    return response

@@ -201,39 +201,11 @@ def verify_web_token(token: str, to_verify: dict):
             )
 
         new_token = create_web_token(data=token_data)
-        print(token_data['exp'])
-        return new_token
 
-    except JWTError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials"
-        )
+        token_data = jwt.decode(new_token, SECRET_KEY, algorithms=[ALGORITHM])
 
+        return {'new_token': new_token, 'token_data': token_data}
 
-def refresh_web_token(current_token: str):
-    """
-    Refresh a web token by extracting user data from current token
-    and creating a new token with extended expiration
-    """
-    try:
-        # Decode the current token to get user data
-        token_data = jwt.decode(current_token, SECRET_KEY, algorithms=[ALGORITHM])
-
-        # Remove expiration from token data to avoid conflicts
-        if 'exp' in token_data:
-            del token_data['exp']
-
-        # Create new token with fresh expiration
-        new_token = create_web_token(data=token_data)
-
-        return new_token
-
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token has expired"
-        )
     except JWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -250,9 +222,9 @@ def web_staff(request: Request):
             detail="Not authenticated"
         )
 
-    token_data = verify_web_token(token=token, to_verify='staff')
+    token_dict = verify_web_token(token=token, to_verify='staff')
 
-    return token_data
+    return token_dict
 
 
 def web_manager(request: Request):
@@ -264,9 +236,9 @@ def web_manager(request: Request):
             detail="Not authenticated"
         )
 
-    token_data = verify_web_token(token=token, to_verify='manager')
+    token_dict = verify_web_token(token=token, to_verify='manager')
 
-    return token_data
+    return token_dict
 
 
 def web_superuser(request: Request):
@@ -278,6 +250,6 @@ def web_superuser(request: Request):
             detail="Not authenticated"
         )
 
-    token_data = verify_web_token(token=token, to_verify='superuser')
+    token_dict = verify_web_token(token=token, to_verify='superuser')
 
-    return token_data
+    return token_dict
