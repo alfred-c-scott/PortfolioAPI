@@ -4,26 +4,12 @@
 {% block title %}Staff{% endblock %}
 
 {% block content %}
-    <h2>Staff</h2>
-    <p>Welcome, {{ staff.first_name }}, you are logged in!</p>
+<br/>
+<br/>
+<h1 align="center">Manage Staff Members</h1>
+<br/>
+<hr/>
 
-    <!-- Display current_user data -->
-    <ul>
-        <li><strong>ID:</strong> {{ staff.id }}</li>
-        <li><strong>Active:</strong> {{ staff.is_active }}</li>
-        <li><strong>Staff:</strong> {{ staff.is_staff }}</li>
-        <li><strong>Manager:</strong> {{ staff.is_manager }}</li>
-        <li><strong>Superuser:</strong> {{ staff.is_superuser }}</li>
-        <li><strong>Expiration:</strong> {{ staff.exp }}</li>
-    </ul>
-    {% if staff.is_superuser %}
-        <p>You have superuser privileges!</p>
-    {% endif %}
-    {% if staff.is_manager %}
-    <p>You have manager privileges!</p>
-    {% endif %}
-    {% if staff.is_staff %}
-    <p>You have staff privileges!</p>
-    {% endif %}
-    <a class="nav-lik" href="{{ url_for('web_login') }}">Login</a>
+
+
 {% endblock %}
