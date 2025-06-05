@@ -10,6 +10,160 @@
 <br/>
 <hr/>
 
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12 text-end">
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addStaffModal">
+                <i class="bi bi-plus-circle"></i> Add Staff Member
+            </button>
+        </div>
+    </div>
+</div>
 
+<!-- Add Staff Modal -->
+<div class="modal fade" id="addStaffModal" tabindex="-1" aria-labelledby="addStaffModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addStaffModalLabel">Add New Staff Member</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="addStaffForm" method="POST" action="/staff">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="first_name" class="form-label">First Name *</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="middle_name" class="form-label">Middle Name</label>
+                                <input type="text" class="form-control" id="middle_name" name="middle_name">
+                            </div>
+                            <div class="mb-3">
+                                <label for="last_name" class="form-label">Last Name *</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username *</label>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email *</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Phone *</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" pattern="[0-9]{10}" required>
+                                <div class="form-text text-light">Enter 10 digits without spaces or dashes</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password *</label>
+                        <input type="password" class="form-control" id="password" name="password" required minlength="8">
+                        <div class="form-text text-light">Minimum 8 characters</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Permissions</label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="is_active" name="is_active" checked>
+                                    <label class="form-check-label" for="is_active">
+                                        Active
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="is_staff" name="is_staff">
+                                    <label class="form-check-label" for="is_staff">
+                                        Staff
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="is_tech" name="is_tech">
+                                    <label class="form-check-label" for="is_tech">
+                                        Tech
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="is_manager" name="is_manager">
+                                    <label class="form-check-label" for="is_manager">
+                                        Manager
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="is_admin" name="is_admin">
+                                    <label class="form-check-label" for="is_admin">
+                                        Admin
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="is_superuser" name="is_superuser">
+                                    <label class="form-check-label" for="is_superuser">
+                                        Superuser
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Add Staff Member</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Handle form submission with better error handling
+document.getElementById('addStaffForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    // Basic validation
+    const requiredFields = ['first_name', 'last_name', 'username', 'email', 'phone', 'password'];
+    let isValid = true;
+
+    requiredFields.forEach(field => {
+        const input = document.getElementById(field);
+        if (!input.value.trim()) {
+            input.classList.add('is-invalid');
+            isValid = false;
+        } else {
+            input.classList.remove('is-invalid');
+        }
+    });
+
+    // Phone validation
+    const phone = document.getElementById('phone').value;
+    if (!/^\d{10}$/.test(phone)) {
+        document.getElementById('phone').classList.add('is-invalid');
+        isValid = false;
+    }
+
+    if (!isValid) {
+        return;
+    }
+
+    // If validation passes, submit the form
+    this.submit();
+});
+
+// Reset form when modal is closed
+document.getElementById('addStaffModal').addEventListener('hidden.bs.modal', function () {
+    document.getElementById('addStaffForm').reset();
+    // Remove any validation classes
+    document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+});
+</script>
 
 {% endblock %}
