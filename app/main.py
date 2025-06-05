@@ -5,6 +5,7 @@ from fastapi import HTTPException
 from fastapi import Request
 from fastapi import status
 from fastapi.responses import JSONResponse
+from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
@@ -12,7 +13,7 @@ from fastapi.exceptions import RequestValidationError
 from sqlalchemy.orm import Session
 
 # local
-# from app.middleware.auth import TokenExpirationMiddleware
+from app.middleware.auth_redirect import TokenExpirationMiddleware
 
 from app.routers.api import auth as api_auth
 from app.routers.api import locations as api_locations
@@ -38,7 +39,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# app.add_middleware(TokenExpirationMiddleware)
+app.add_middleware(TokenExpirationMiddleware)
 
 app.include_router(api_auth.router)
 app.include_router(api_locations.router)
@@ -89,4 +90,19 @@ async def validation_exception_handler(request: Request,
     return JSONResponse(
         status_code=status_code,
         content={"error": {"msg": error_msg, "status_code": status_code}}
+    )
+
+
+@app.exception_handler(HTTPException)
+async def auth_exception_handler(request: Request, exc: HTTPException):
+    # Check if this is a 401 error on a web route (not API)
+    if exc.status_code == 401 and not request.url.path.startswith("/api/"):
+        # Check if it's an authentication error
+        if "Could not validate credentials" in str(exc.detail) or "Not authenticated" in str(exc.detail):
+            return RedirectResponse(url="/login?expired=true", status_code=302)
+
+    # For all other cases, use the existing JSON response
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"error": {"msg": exc.detail, "status_code": exc.status_code}}
     )
