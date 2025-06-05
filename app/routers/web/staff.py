@@ -27,20 +27,11 @@ async def staff(request: Request,
     try:
         context = {
             'request': request,
-            'staff': current_user['token_data'],
+            'staff': current_user,  # Now just token data
             'success': success
         }
 
-        response = templates.TemplateResponse("staff.html", context)
-        response.set_cookie(
-            key="access_token",
-            value=current_user['new_token'],
-            httponly=True,
-            path="/",
-            secure=False,
-            samesite="Lax"
-        )
-        return response
+        return templates.TemplateResponse("staff.html", context)
 
     except Exception as e:
         return RedirectResponse(url="/login?error=page_load_failed", status_code=status.HTTP_302_FOUND)
@@ -67,7 +58,7 @@ async def create_staff(
 
     try:
         # Server-side permission validation - only superusers can grant manager/superuser permissions
-        if not current_user['token_data']['is_superuser']:
+        if not current_user['is_superuser']:
             is_manager = False
             is_superuser = False
 
@@ -112,43 +103,25 @@ async def create_staff(
             else:
                 error_message = "Duplicate entry detected"
 
-        # Return to staff page with error
+        # Return to staff page with error - middleware will handle token refresh
         context = {
             "request": request,
-            "staff": current_user['token_data'],
+            "staff": current_user,  # Now just token data
             "error": error_message
         }
 
-        response = templates.TemplateResponse("staff.html", context)
-        response.set_cookie(
-            key="access_token",
-            value=current_user['new_token'],
-            httponly=True,
-            path="/",
-            secure=False,
-            samesite="Lax"
-        )
-        return response
+        return templates.TemplateResponse("staff.html", context)
 
     except Exception as e:
         db.rollback()
         # Log the error if you have logging set up
         # logger.error(f"Error creating staff member: {str(e)}")
 
-        # Handle unexpected errors
+        # Handle unexpected errors - middleware will handle token refresh
         context = {
             "request": request,
-            "staff": current_user['token_data'],
+            "staff": current_user,  # Now just token data
             "error": "An unexpected error occurred while creating the staff member"
         }
 
-        response = templates.TemplateResponse("staff.html", context)
-        response.set_cookie(
-            key="access_token",
-            value=current_user['new_token'],
-            httponly=True,
-            path="/",
-            secure=False,
-            samesite="Lax"
-        )
-        return response
+        return templates.TemplateResponse("staff.html", context)

@@ -175,7 +175,7 @@ def create_web_token(data: dict):
     return encoded_jwt
 
 
-def verify_web_token(token: str, to_verify: dict):
+def verify_web_token(token: str, to_verify: str):
     try:
         token_data = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
 
@@ -200,11 +200,8 @@ def verify_web_token(token: str, to_verify: dict):
                 detail="User is not superuser"
             )
 
-        new_token = create_web_token(data=token_data)
-
-        token_data = jwt.decode(new_token, SECRET_KEY, algorithms=[ALGORITHM])
-
-        return {'new_token': new_token, 'token_data': token_data}
+        # Just return token data - middleware handles token refresh
+        return token_data
 
     except JWTError:
         raise HTTPException(
@@ -222,9 +219,8 @@ def web_staff(request: Request):
             detail="Not authenticated"
         )
 
-    token_dict = verify_web_token(token=token, to_verify='staff')
-
-    return token_dict
+    token_data = verify_web_token(token=token, to_verify='staff')
+    return token_data
 
 
 def web_manager(request: Request):
@@ -236,9 +232,8 @@ def web_manager(request: Request):
             detail="Not authenticated"
         )
 
-    token_dict = verify_web_token(token=token, to_verify='manager')
-
-    return token_dict
+    token_data = verify_web_token(token=token, to_verify='manager')
+    return token_data
 
 
 def web_superuser(request: Request):
@@ -250,6 +245,5 @@ def web_superuser(request: Request):
             detail="Not authenticated"
         )
 
-    token_dict = verify_web_token(token=token, to_verify='superuser')
-
-    return token_dict
+    token_data = verify_web_token(token=token, to_verify='superuser')
+    return token_data

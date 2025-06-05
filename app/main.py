@@ -14,6 +14,7 @@ from sqlalchemy.orm import Session
 
 # local
 from app.middleware.auth_redirect import TokenExpirationMiddleware
+from app.middleware.token_refresh import TokenRefreshMiddleware
 
 from app.routers.api import auth as api_auth
 from app.routers.api import locations as api_locations
@@ -39,7 +40,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.add_middleware(TokenExpirationMiddleware)
+# Order matters! Token refresh should happen AFTER auth check but BEFORE response
+app.add_middleware(TokenExpirationMiddleware)  # First - handles authentication
+app.add_middleware(TokenRefreshMiddleware)     # Second - handles token refresh
 
 app.include_router(api_auth.router)
 app.include_router(api_locations.router)
