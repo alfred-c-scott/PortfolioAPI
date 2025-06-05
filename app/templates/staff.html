@@ -10,6 +10,20 @@
 <br/>
 <hr/>
 
+{% if error %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ error }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+{% endif %}
+
+{% if success %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        Staff member created successfully!
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+{% endif %}
+
 <div class="container">
     <div class="row mb-4">
         <div class="col-12 text-end">
