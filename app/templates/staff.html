@@ -78,21 +78,9 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="password" class="form-label">Password *</label>
-                        <input type="password" class="form-control" id="password" name="password" required minlength="8">
-                        <div class="form-text text-light">Minimum 8 characters</div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Permissions</label>
+                        <label class="form-label fw-bold fs-5">Permissions</label>
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="is_active" name="is_active" checked>
-                                    <label class="form-check-label" for="is_active">
-                                        Active
-                                    </label>
-                                </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="is_staff" name="is_staff">
                                     <label class="form-check-label" for="is_staff">
@@ -105,14 +93,15 @@
                                         Tech
                                     </label>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="is_manager" name="is_manager">
                                     <label class="form-check-label" for="is_manager">
                                         Manager
                                     </label>
                                 </div>
+                            </div>
+
+                            <div class="col-md-6">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="is_admin" name="is_admin">
                                     <label class="form-check-label" for="is_admin">

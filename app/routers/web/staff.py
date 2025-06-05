@@ -55,7 +55,7 @@ async def create_staff(
     username: str = Form(...),
     email: str = Form(...),
     phone: str = Form(...),
-    password: str = Form(...),
+    # password: str = Form(...),
     is_active: bool = Form(False),
     is_staff: bool = Form(False),
     is_tech: bool = Form(False),
@@ -74,7 +74,7 @@ async def create_staff(
             "username": username,
             "email": email,
             "phone": phone,
-            "password": utils.hash(password),  # Hash the password
+            "password": utils.hash("password123"),  # Hash the password
             "is_active": is_active,
             "is_staff": is_staff,
             "is_tech": is_tech,
