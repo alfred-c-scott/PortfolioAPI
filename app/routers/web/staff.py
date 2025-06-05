@@ -66,6 +66,11 @@ async def create_staff(
     current_user: dict = Depends(oauth2.web_staff)):
 
     try:
+        # Server-side permission validation - only superusers can grant manager/superuser permissions
+        if not current_user['token_data']['is_superuser']:
+            is_manager = False
+            is_superuser = False
+
         # Create staff data dict
         staff_data = {
             "first_name": first_name,

@@ -66,4 +66,16 @@ async def login(request: Request,
 
 @router.get('/logout', response_class=HTMLResponse)
 async def web_logout(request: Request):
-    return templates.TemplateResponse("logout.html", {"request": request})
+    # Create redirect response to login page
+    response = RedirectResponse(url="/login", status_code=status.HTTP_302_FOUND)
+
+    # Clear the access_token cookie by setting it to expire immediately
+    response.delete_cookie(
+        key="access_token",
+        path="/",
+        httponly=True,
+        secure=False,  # Match the secure setting from login
+        samesite="Lax"
+    )
+
+    return response

@@ -1,7 +1,7 @@
 <!-- app/templates/staff.html -->
 {% extends "base.html" %}
 
-{% block title %}Staff{% endblock %}
+{% block title %} - Manage Staff{% endblock %}
 
 {% block content %}
 <br/>
@@ -93,12 +93,14 @@
                                         Tech
                                     </label>
                                 </div>
+                                {% if staff.is_superuser %}
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="is_manager" name="is_manager">
                                     <label class="form-check-label" for="is_manager">
                                         Manager
                                     </label>
                                 </div>
+                                {% endif %}
                             </div>
 
                             <div class="col-md-6">
@@ -108,12 +110,14 @@
                                         Admin
                                     </label>
                                 </div>
+                                {% if staff.is_superuser %}
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="is_superuser" name="is_superuser">
                                     <label class="form-check-label" for="is_superuser">
                                         Superuser
                                     </label>
                                 </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -133,7 +137,7 @@ document.getElementById('addStaffForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
     // Basic validation
-    const requiredFields = ['first_name', 'last_name', 'username', 'email', 'phone', 'password'];
+    const requiredFields = ['first_name', 'last_name', 'username', 'email', 'phone'];
     let isValid = true;
 
     requiredFields.forEach(field => {
