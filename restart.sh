@@ -1,14 +1,14 @@
 #!/bin/bash
 
-# kill.sh - Stop the server and reload environment variables
+# restart.sh - Stop server, reload env vars, and restart server in foreground
 
 ENV_FILE=".env"
 PORT=8030
 
-echo "Stopping server and reloading environment..."
+echo "Restarting server with fresh environment variables..."
 
 # Step 1: Kill the server
-echo "Stopping FastAPI server on port $PORT..."
+echo "Stopping server on port $PORT..."
 
 # Find and kill process using port 8030
 PID=$(lsof -ti:$PORT 2>/dev/null)
@@ -29,8 +29,8 @@ fi
 
 echo "Server stopped"
 
-# Step 2: Reload environment variables
-echo "Reloading environment variables from $ENV_FILE..."
+# Step 2: Load environment variables
+echo "Loading environment variables from $ENV_FILE..."
 if [ ! -f "$ENV_FILE" ]; then
     echo "Error: $ENV_FILE file not found!"
     exit 1
@@ -41,6 +41,12 @@ set -a  # automatically export all variables
 source "$ENV_FILE"
 set +a  # stop auto-exporting
 
-echo "Environment variables reloaded"
-echo "Server killed"
-echo "Use ./run.sh to start the server again"
+echo "Environment variables loaded"
+
+# Step 3: Start the server in foreground
+echo "Starting FastAPI server..."
+echo "Server running at: http://localhost:8030"
+echo "Auto-reload enabled for development"
+echo "Press Ctrl+C to stop the server"
+
+uvicorn app.main:app --host 0.0.0.0 --port 8030 --reload
