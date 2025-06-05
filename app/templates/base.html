@@ -1,3 +1,4 @@
+<!-- app/templates/base.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -41,6 +42,25 @@
 </head>
 <body>
 
+<!-- Token Timeout Modal -->
+<div class="modal fade" id="tokenTimeoutModal" tabindex="-1" aria-labelledby="tokenTimeoutModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tokenTimeoutModalLabel">Session Expiring Soon</h5>
+            </div>
+            <div class="modal-body">
+                <p>Your session will expire in <span id="timeRemaining">60</span> seconds.</p>
+                <p>Would you like to extend your session?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancelRefresh">Cancel</button>
+                <button type="button" class="btn btn-primary" id="refreshToken">OK - Extend Session</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container-fluid">
@@ -80,5 +100,158 @@
 
 <!-- Bootstrap JS Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Token Timeout Handling Script -->
+<script>
+class TokenTimeoutManager {
+    constructor(tokenExpiresInSeconds) {
+        this.tokenExpiresIn = tokenExpiresInSeconds;
+        this.warningThreshold = 60; // Show warning 1 minute before expiration
+        this.countdownInterval = null;
+        this.timeoutInterval = null;
+        this.modalShown = false;
+        this.modal = null;
+
+        this.init();
+    }
+
+    init() {
+        // Only initialize if we have a valid token expiration time
+        if (this.tokenExpiresIn <= 0) {
+            console.log('No valid token expiration time, skipping timeout manager');
+            return;
+        }
+
+        console.log(`Token expires in ${this.tokenExpiresIn} seconds`);
+
+        // Initialize Bootstrap modal
+        this.modal = new bootstrap.Modal(document.getElementById('tokenTimeoutModal'));
+
+        // Set up event listeners
+        this.setupEventListeners();
+
+        // Calculate when to show warning
+        const timeUntilWarning = Math.max(0, this.tokenExpiresIn - this.warningThreshold);
+
+        if (timeUntilWarning > 0) {
+            // Set timeout to show warning modal
+            this.timeoutInterval = setTimeout(() => {
+                this.showWarningModal();
+            }, timeUntilWarning * 1000);
+
+            console.log(`Warning will show in ${timeUntilWarning} seconds`);
+        } else {
+            // Token expires very soon, show warning immediately
+            this.showWarningModal();
+        }
+    }
+
+    setupEventListeners() {
+        // Refresh token button
+        document.getElementById('refreshToken').addEventListener('click', () => {
+            this.refreshToken();
+        });
+
+        // Cancel button
+        document.getElementById('cancelRefresh').addEventListener('click', () => {
+            this.cancelRefresh();
+        });
+    }
+
+    showWarningModal() {
+        if (this.modalShown) return;
+
+        this.modalShown = true;
+        console.log('Showing token expiration warning modal');
+
+        // Show the modal
+        this.modal.show();
+
+        // Start countdown
+        this.startCountdown();
+    }
+
+    startCountdown() {
+        const timeRemainingSpan = document.getElementById('timeRemaining');
+        let remainingSeconds = this.warningThreshold;
+
+        // Update immediately
+        timeRemainingSpan.textContent = remainingSeconds;
+
+        // Update every second
+        this.countdownInterval = setInterval(() => {
+            remainingSeconds--;
+            timeRemainingSpan.textContent = remainingSeconds;
+
+            if (remainingSeconds <= 0) {
+                // Time's up - token has expired
+                clearInterval(this.countdownInterval);
+                console.log('Token has expired, redirecting to login');
+                window.location.href = '/login?expired=true';
+            }
+        }, 1000);
+    }
+
+    refreshToken() {
+        console.log('Refreshing token by reloading current page...');
+
+        // Clear intervals
+        this.clearIntervals();
+
+        // Simply reload the current page - the middleware will refresh the token automatically
+        window.location.reload();
+    }
+
+    cancelRefresh() {
+        console.log('User cancelled token refresh');
+
+        // Clear intervals
+        this.clearIntervals();
+
+        // Hide modal
+        this.modal.hide();
+
+        // User chose not to refresh - token will expire naturally
+        // The existing middleware will handle the redirect when token expires
+    }
+
+    clearIntervals() {
+        if (this.countdownInterval) {
+            clearInterval(this.countdownInterval);
+            this.countdownInterval = null;
+        }
+        if (this.timeoutInterval) {
+            clearTimeout(this.timeoutInterval);
+            this.timeoutInterval = null;
+        }
+    }
+
+    destroy() {
+        this.clearIntervals();
+        if (this.modal) {
+            this.modal.dispose();
+        }
+    }
+}
+
+// Initialize token timeout manager when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Get token expiration time from template context
+    const tokenExpiresIn = {{ token_expires_in | default(0) }};
+
+    // Only initialize on protected pages (where token_expires_in is provided)
+    if (tokenExpiresIn > 0) {
+        window.tokenTimeoutManager = new TokenTimeoutManager(tokenExpiresIn);
+    }
+});
+
+// Clean up when page unloads
+window.addEventListener('beforeunload', function() {
+    if (window.tokenTimeoutManager) {
+        window.tokenTimeoutManager.destroy();
+    }
+});
+</script>
+
 </body>
 </html>

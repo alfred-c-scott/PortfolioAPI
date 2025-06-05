@@ -1,3 +1,4 @@
+# app/oauth2.py
 from datetime import datetime
 from datetime import timedelta
 
@@ -161,8 +162,19 @@ def current_machine(token: str = Depends(oauth2_scheme)):
 
 def create_web_token(data: dict):
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=WEB_EXPIRE_MINUTES)
-    to_encode.update({'exp': expire})
+
+    # Remove 'exp' from the data if it exists to avoid conflicts
+    if 'exp' in to_encode:
+        del to_encode['exp']
+
+    # Create new expiration time as timestamp (not datetime object)
+    current_time = datetime.utcnow()
+    expire_time = current_time + timedelta(minutes=WEB_EXPIRE_MINUTES)
+    expire_timestamp = expire_time.timestamp()
+
+    # Use timestamp directly for 'exp' claim
+    to_encode.update({'exp': expire_timestamp})
+
     try:
         encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     except jwt.JWTError as e:

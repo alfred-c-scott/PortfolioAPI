@@ -1,3 +1,4 @@
+# app/routers/web/staff.py
 # installed
 from fastapi import Depends, Form, status
 from fastapi import APIRouter
@@ -25,10 +26,14 @@ async def staff(request: Request,
                 success: bool = False,
                 current_user: dict = Depends(oauth2.web_staff)):
     try:
+        # Get token expiration from request state (set by middleware)
+        token_expires_in = getattr(request.state, 'token_expires_in', 0)
+
         context = {
             'request': request,
             'staff': current_user,  # Now just token data
-            'success': success
+            'success': success,
+            'token_expires_in': token_expires_in
         }
 
         return templates.TemplateResponse("staff.html", context)
@@ -103,11 +108,15 @@ async def create_staff(
             else:
                 error_message = "Duplicate entry detected"
 
+        # Get token expiration for error response
+        token_expires_in = getattr(request.state, 'token_expires_in', 0)
+
         # Return to staff page with error - middleware will handle token refresh
         context = {
             "request": request,
             "staff": current_user,  # Now just token data
-            "error": error_message
+            "error": error_message,
+            "token_expires_in": token_expires_in
         }
 
         return templates.TemplateResponse("staff.html", context)
@@ -117,11 +126,15 @@ async def create_staff(
         # Log the error if you have logging set up
         # logger.error(f"Error creating staff member: {str(e)}")
 
+        # Get token expiration for error response
+        token_expires_in = getattr(request.state, 'token_expires_in', 0)
+
         # Handle unexpected errors - middleware will handle token refresh
         context = {
             "request": request,
             "staff": current_user,  # Now just token data
-            "error": "An unexpected error occurred while creating the staff member"
+            "error": "An unexpected error occurred while creating the staff member",
+            "token_expires_in": token_expires_in
         }
 
         return templates.TemplateResponse("staff.html", context)
