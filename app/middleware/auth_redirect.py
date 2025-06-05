@@ -1,4 +1,4 @@
-# app/middleware/auth.py
+# app/middleware/auth_redirect.py
 from fastapi import Request
 from fastapi.responses import RedirectResponse
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -11,6 +11,7 @@ class TokenExpirationMiddleware(BaseHTTPMiddleware):
         super().__init__(app)
         self.protected_routes = [
             "/staff",
+            "/dashboard",
             "/web/locations",
             "/web/machines",
             "/web/dashboard"

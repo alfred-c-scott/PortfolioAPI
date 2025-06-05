@@ -14,6 +14,7 @@ class TokenRefreshMiddleware(BaseHTTPMiddleware):
         # Routes that should get automatic token refresh
         self.web_routes = [
             "/staff",
+            "/dashboard",
             "/web/locations",
             "/web/machines",
             "/web/dashboard"

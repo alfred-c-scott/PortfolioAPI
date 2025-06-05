@@ -1,3 +1,4 @@
+# app/routers/web/auth.py
 from fastapi import status
 from fastapi import Depends
 from fastapi import APIRouter
@@ -51,7 +52,7 @@ async def login(request: Request,
 
     access_token = oauth2.create_web_token(data=data)
 
-    response = RedirectResponse(url="/staff", status_code=status.HTTP_302_FOUND)
+    response = RedirectResponse(url="/dashboard", status_code=status.HTTP_302_FOUND)
 
     response.set_cookie(
         key="access_token",
