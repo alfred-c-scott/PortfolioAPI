@@ -50,9 +50,104 @@
             </div>
         </form>
 
+        <div class="d-grid mt-2">
+            <button type="button"
+                    class="btn btn-primary"
+                    id="twoFactorSignInBtn">
+                Sign In with 2FA
+            </button>
+        </div>
+
         <div class="text-center mt-3">
             <a href="#" class="text-light">Forgot password?</a>
         </div>
     </div>
 </div>
+
+<!-- 2FA Modal -->
+<div class="modal fade" id="twoFactorModal" tabindex="-1" aria-labelledby="twoFactorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="twoFactorModalLabel">Two-Factor Authentication</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="twoFactorForm">
+                    <div class="mb-4">
+                        <label for="2FA_code" class="form-label">2FA Code</label>
+                        <input type="text"
+                               class="form-control"
+                               id="2FA_code"
+                               name="2FA_code"
+                               maxlength="6"
+                               pattern="[0-9]{6}"
+                               required
+                               placeholder="Enter 6-digit code">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="submitTwoFactor">Verify</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Handle 2FA sign-in button click with validation
+document.getElementById('twoFactorSignInBtn').addEventListener('click', function() {
+    const email = document.getElementById('username');
+    const password = document.getElementById('password');
+
+    // Reset any previous validation states
+    email.classList.remove('is-invalid');
+    password.classList.remove('is-invalid');
+
+    let isValid = true;
+
+    // Validate email
+    if (!email.value.trim() || !email.checkValidity()) {
+        email.classList.add('is-invalid');
+        isValid = false;
+    }
+
+    // Validate password
+    if (!password.value.trim()) {
+        password.classList.add('is-invalid');
+        isValid = false;
+    }
+
+    // Only show modal if both fields are valid
+    if (isValid) {
+        const twoFactorModal = new bootstrap.Modal(document.getElementById('twoFactorModal'));
+        twoFactorModal.show();
+    }
+});
+
+// Handle 2FA form submission (non-functional for now)
+document.getElementById('submitTwoFactor').addEventListener('click', function() {
+    // TODO: Implement 2FA authentication logic
+    console.log('2FA verification clicked - functionality to be implemented');
+});
+
+// Reset 2FA form when modal is closed
+document.getElementById('twoFactorModal').addEventListener('hidden.bs.modal', function () {
+    document.getElementById('twoFactorForm').reset();
+    // Remove any validation classes
+    document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+});
+
+// Auto-format 2FA code input (digits only)
+document.getElementById('2FA_code').addEventListener('input', function(e) {
+    // Remove any non-digit characters
+    this.value = this.value.replace(/[^0-9]/g, '');
+
+    // Limit to 6 digits
+    if (this.value.length > 6) {
+        this.value = this.value.slice(0, 6);
+    }
+});
+</script>
 {% endblock %}
