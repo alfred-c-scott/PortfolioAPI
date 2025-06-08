@@ -12,9 +12,6 @@ class TokenExpirationMiddleware(BaseHTTPMiddleware):
         self.protected_routes = [
             "/staff",
             "/dashboard",
-            "/web/locations",
-            "/web/machines",
-            "/web/dashboard"
         ]
         # Routes that should be excluded from token checking
         self.excluded_routes = [

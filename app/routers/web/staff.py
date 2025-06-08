@@ -42,7 +42,26 @@ async def staff(request: Request,
         return RedirectResponse(url="/login?error=page_load_failed", status_code=status.HTTP_302_FOUND)
 
 
-@router.post('', response_class=HTMLResponse)
+@router.get('/add_staff', response_class=HTMLResponse)
+async def add_staff_page(request: Request,
+                         current_user: dict = Depends(oauth2.web_staff)):
+    try:
+        # Get token expiration from request state (set by middleware)
+        token_expires_in = getattr(request.state, 'token_expires_in', 0)
+
+        context = {
+            'request': request,
+            'staff': current_user,
+            'token_expires_in': token_expires_in
+        }
+
+        return templates.TemplateResponse("add_staff.html", context)
+
+    except Exception as e:
+        return RedirectResponse(url="/login?error=page_load_failed", status_code=status.HTTP_302_FOUND)
+
+
+@router.post('/add_staff', response_class=HTMLResponse)
 async def create_staff(
     request: Request,
     first_name: str = Form(...),
@@ -111,7 +130,7 @@ async def create_staff(
         # Get token expiration for error response
         token_expires_in = getattr(request.state, 'token_expires_in', 0)
 
-        # Return to staff page with error - middleware will handle token refresh
+        # Return to add_staff page with error - middleware will handle token refresh
         context = {
             "request": request,
             "staff": current_user,  # Now just token data
@@ -119,7 +138,7 @@ async def create_staff(
             "token_expires_in": token_expires_in
         }
 
-        return templates.TemplateResponse("staff.html", context)
+        return templates.TemplateResponse("add_staff.html", context)
 
     except Exception as e:
         db.rollback()
@@ -137,4 +156,4 @@ async def create_staff(
             "token_expires_in": token_expires_in
         }
 
-        return templates.TemplateResponse("staff.html", context)
+        return templates.TemplateResponse("add_staff.html", context)

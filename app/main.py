@@ -23,6 +23,7 @@ from app.routers.api import machines as api_machines
 from app.routers.api import customer as api_customer
 
 from app.routers.web import auth as web_auth
+# from app.routers.web import projects
 from app.routers.web import staff as web_staff
 from app.routers.web import dashboard as web_dashboard
 from app.routers.web import locations as web_locations
@@ -52,6 +53,7 @@ app.include_router(api_machines.router)
 app.include_router(api_customer.router)
 
 app.include_router(web_auth.router)
+# app.include_router(projects.router)
 app.include_router(web_staff.router)
 app.include_router(web_dashboard.router)
 app.include_router(web_locations.router)
