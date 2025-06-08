@@ -20,3 +20,5 @@ tree.txt
 # .dockerignore
 # Dockerfile
 # docker-compose.yml
+
+.server_pid
