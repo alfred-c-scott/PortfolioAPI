@@ -35,8 +35,8 @@ async def staff(request: Request,
 
         context = {
             'request': request,
-            'current_user': current_user,  # Changed from 'staff' to 'current_user'
-            'staff': staff,
+            'current_user': current_user,  # Current user for navbar/permissions
+            'staff': staff,                # All staff members for table display
             'success': success,
             'token_expires_in': token_expires_in
         }
@@ -53,8 +53,20 @@ async def staff_member(request: Request,
                         db: Session = Depends(get_db),
                         current_user: dict = Depends(oauth2.web_staff)):
 
+    try:
+        # Get token expiration from request state (set by middleware)
+        token_expires_in = getattr(request.state, 'token_expires_in', 0)
 
-    return templates.TemplateResponse("staff_member.html", {"request": request})
+        context = {
+            'request': request,
+            'current_user': current_user,
+            'token_expires_in': token_expires_in
+        }
+
+        return templates.TemplateResponse("staff_member.html", context)
+
+    except Exception as e:
+        return RedirectResponse(url="/login?error=page_load_failed", status_code=status.HTTP_302_FOUND)
 
 
 @router.get('/add_staff', response_class=HTMLResponse)
@@ -66,7 +78,7 @@ async def add_staff_page(request: Request,
 
         context = {
             'request': request,
-            'current_user': current_user,  # Changed from 'staff' to 'current_user'
+            'current_user': current_user,
             'token_expires_in': token_expires_in
         }
 
@@ -148,7 +160,7 @@ async def create_staff(
         # Return to add_staff page with error - middleware will handle token refresh
         context = {
             "request": request,
-            "current_user": current_user,  # Changed from 'staff' to 'current_user'
+            "current_user": current_user,
             "error": error_message,
             "token_expires_in": token_expires_in
         }
@@ -166,7 +178,7 @@ async def create_staff(
         # Handle unexpected errors - middleware will handle token refresh
         context = {
             "request": request,
-            "current_user": current_user,  # Changed from 'staff' to 'current_user'
+            "current_user": current_user,
             "error": "An unexpected error occurred while creating the staff member",
             "token_expires_in": token_expires_in
         }
