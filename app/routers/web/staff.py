@@ -24,14 +24,19 @@ templates = Jinja2Templates(directory="app/templates")
 @router.get('', response_class=HTMLResponse)
 async def staff(request: Request,
                 success: bool = False,
+                db: Session = Depends(get_db),
                 current_user: dict = Depends(oauth2.web_staff)):
     try:
         # Get token expiration from request state (set by middleware)
         token_expires_in = getattr(request.state, 'token_expires_in', 0)
 
+        staff = db.query(models.Staff).all()
+        print(staff)
+
         context = {
             'request': request,
             'current_user': current_user,  # Changed from 'staff' to 'current_user'
+            'staff': staff,
             'success': success,
             'token_expires_in': token_expires_in
         }

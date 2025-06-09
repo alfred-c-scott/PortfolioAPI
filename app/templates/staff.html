@@ -25,6 +25,88 @@
             </a>
         </div>
     </div>
+
+    <!-- Staff Members Table -->
+    <div class="row">
+        <div class="col-12">
+            {% if staff and staff|length > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover" style="background-color: transparent;">
+                        <thead class="table-dark" style="border-bottom: 3px solid #ffffff; background-color: transparent;">
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Username</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Phone</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Permissions</th>
+                                <th scope="col">Created</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody style="background-color: transparent;">
+                            {% for member in staff %}
+                            <tr>
+                                <td>
+                                    {{ member.first_name }}
+                                    {% if member.middle_name %}{{ member.middle_name[0] }}. {% endif %}
+                                    {{ member.last_name }}
+                                </td>
+                                <td>{{ member.username }}</td>
+                                <td>{{ member.email }}</td>
+                                <td>({{ member.phone[:3] }}) {{ member.phone[3:6] }}-{{ member.phone[6:] }}</td>
+                                <td>
+                                    {% if member.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-wrap gap-1">
+                                        {% if member.is_staff %}
+                                            <span class="badge bg-primary">Staff</span>
+                                        {% endif %}
+                                        {% if member.is_tech %}
+                                            <span class="badge bg-info">Tech</span>
+                                        {% endif %}
+                                        {% if member.is_manager %}
+                                            <span class="badge bg-warning">Manager</span>
+                                        {% endif %}
+                                        {% if member.is_admin %}
+                                            <span class="badge bg-secondary">Admin</span>
+                                        {% endif %}
+                                        {% if member.is_superuser %}
+                                            <span class="badge bg-danger">Superuser</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>{{ member.created.strftime('%Y-%m-%d') }}</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <button type="button" class="btn btn-outline-light btn-sm" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-danger btn-sm" title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info text-center" role="alert">
+                    <h4 class="alert-heading">No Staff Members Found</h4>
+                    <p>There are currently no staff members in the system.</p>
+                    <hr>
+                    <p class="mb-0">Click the "Add Staff Member" button above to create your first staff member.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 </div>
 
 {% endblock %}
