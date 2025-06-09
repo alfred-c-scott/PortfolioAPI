@@ -73,7 +73,7 @@
                 <li class="nav-item"><a class="nav-link" href="/">Download</a></li>
                 <li class="nav-item"><a class="nav-link" href="/about">Homelab</a></li>
                 <li class="nav-item"><a class="nav-link" href="/projects">Projects</a></li>
-                {% if staff %}
+                {% if current_user %}
                     <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
                 {% else %}
                     <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>

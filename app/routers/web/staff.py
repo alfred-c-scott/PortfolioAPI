@@ -31,7 +31,7 @@ async def staff(request: Request,
 
         context = {
             'request': request,
-            'staff': current_user,  # Now just token data
+            'current_user': current_user,  # Changed from 'staff' to 'current_user'
             'success': success,
             'token_expires_in': token_expires_in
         }
@@ -51,7 +51,7 @@ async def add_staff_page(request: Request,
 
         context = {
             'request': request,
-            'staff': current_user,
+            'current_user': current_user,  # Changed from 'staff' to 'current_user'
             'token_expires_in': token_expires_in
         }
 
@@ -133,7 +133,7 @@ async def create_staff(
         # Return to add_staff page with error - middleware will handle token refresh
         context = {
             "request": request,
-            "staff": current_user,  # Now just token data
+            "current_user": current_user,  # Changed from 'staff' to 'current_user'
             "error": error_message,
             "token_expires_in": token_expires_in
         }
@@ -151,7 +151,7 @@ async def create_staff(
         # Handle unexpected errors - middleware will handle token refresh
         context = {
             "request": request,
-            "staff": current_user,  # Now just token data
+            "current_user": current_user,  # Changed from 'staff' to 'current_user'
             "error": "An unexpected error occurred while creating the staff member",
             "token_expires_in": token_expires_in
         }
