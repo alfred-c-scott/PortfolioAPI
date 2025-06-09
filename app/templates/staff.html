@@ -41,7 +41,6 @@
                                 <th scope="col">Status</th>
                                 <th scope="col">Permissions</th>
                                 <th scope="col">Created</th>
-                                <th scope="col">Actions</th>
                             </tr>
                         </thead>
                         <tbody style="background-color: transparent;">
@@ -82,16 +81,6 @@
                                     </div>
                                 </td>
                                 <td>{{ member.created.strftime('%Y-%m-%d') }}</td>
-                                <td>
-                                    <div class="btn-group btn-group-sm" role="group">
-                                        <button type="button" class="btn btn-outline-light btn-sm" title="Edit">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-outline-danger btn-sm" title="Delete">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
