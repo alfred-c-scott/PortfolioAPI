@@ -47,6 +47,16 @@ async def staff(request: Request,
         return RedirectResponse(url="/login?error=page_load_failed", status_code=status.HTTP_302_FOUND)
 
 
+@router.get('/{staff_id}', response_class=HTMLResponse)
+async def staff_member(request: Request,
+                        staff_id: int,
+                        db: Session = Depends(get_db),
+                        current_user: dict = Depends(oauth2.web_staff)):
+
+
+    return templates.TemplateResponse("staff_member.html", {"request": request})
+
+
 @router.get('/add_staff', response_class=HTMLResponse)
 async def add_staff_page(request: Request,
                          current_user: dict = Depends(oauth2.web_staff)):
