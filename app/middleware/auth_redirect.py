@@ -3,28 +3,24 @@ from fastapi import Request
 from fastapi.responses import RedirectResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from jose import jwt, JWTError
+
 from app.config import settings
+from app.conf import excluded_routes
 
 
 class TokenExpirationMiddleware(BaseHTTPMiddleware):
     def __init__(self, app):
         super().__init__(app)
-        self.protected_routes = [
-            "/staff",
-            "/dashboard",
-        ]
+        # self.protected_routes = [
+        #     "/staff",
+        #     "/dashboard",
+        # ]
         # Routes that should be excluded from token checking
-        self.excluded_routes = [
-            "/login",
-            "/logout",
-            "/api/",  # All API routes
-            "/",      # Home page
-            "/static/",  # Static files
-        ]
+        self.excluded_routes = excluded_routes
 
     async def dispatch(self, request: Request, call_next):
         # Check if this is a web route that needs authentication
-        if self._should_check_token(request.url.path):
+        if self._is_protected(request.url.path):
             token = request.cookies.get("access_token")
 
             # No token present - redirect to login
@@ -42,7 +38,7 @@ class TokenExpirationMiddleware(BaseHTTPMiddleware):
         response = await call_next(request)
         return response
 
-    def _should_check_token(self, path: str) -> bool:
+    def _is_protected(self, path: str) -> bool:
         """Determine if the request path requires token validation"""
 
         # Skip excluded routes
@@ -50,9 +46,9 @@ class TokenExpirationMiddleware(BaseHTTPMiddleware):
             if path.startswith(excluded):
                 return False
 
-        # Check protected routes
-        for protected in self.protected_routes:
-            if path.startswith(protected):
-                return True
+        # # Check protected routes
+        # for protected in self.protected_routes:
+        #     if path.startswith(protected):
+        #         return True
 
-        return False
+        return True
