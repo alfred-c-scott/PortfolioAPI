@@ -29,7 +29,9 @@ async def dashboard(request: Request,
             'token_expires_in': token_expires_in
         }
 
-        return templates.TemplateResponse("dashboard.html", context)
+        return templates.TemplateResponse(request=request,
+                                          name="dashboard.html",
+                                          context=context)
 
     except Exception as e:
         from fastapi.responses import RedirectResponse

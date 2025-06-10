@@ -26,7 +26,8 @@ templates = Jinja2Templates(directory="app/templates")
 
 @router.get('/login', response_class=HTMLResponse)
 async def web_login(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+    return templates.TemplateResponse(request=request,
+                                      name="login.html")
 
 
 @router.post('/login', response_class=HTMLResponse)
@@ -37,22 +38,21 @@ async def login(request: Request,
     staff = db.query(models.Staff).filter(models.Staff.email == staff_credentials.username).first()
 
     if not staff:
-        return templates.TemplateResponse(
-            "login.html",
-            {"request": request, "error": "Invalid credentials"}
-        )
+        return templates.TemplateResponse(request=request,
+                                          name="login.html",
+                                          context={"error": "Invalid credentials"})
 
     if not utils.verify(staff_credentials.password, staff.password):
-        return templates.TemplateResponse(
-            "login.html",
-            {"request": request, "error": "Invalid credentials"}
-        )
+        return templates.TemplateResponse(request=request,
+                                          name="login.html",
+                                          context={"error": "Invalid credentials"})
 
     data = schemas.StaffTokenData.model_validate(staff).model_dump()
 
     access_token = oauth2.create_web_token(data=data)
 
-    response = RedirectResponse(url="/dashboard", status_code=status.HTTP_302_FOUND)
+    response = RedirectResponse(url="/dashboard",
+                                status_code=status.HTTP_302_FOUND)
 
     response.set_cookie(
         key="access_token",
@@ -62,13 +62,15 @@ async def login(request: Request,
         secure=False,  # For local testing
         samesite="Lax"
     )
+
     return response
 
 
 @router.get('/logout', response_class=HTMLResponse)
 async def web_logout(request: Request):
     # Create redirect response to login page
-    response = RedirectResponse(url="/login", status_code=status.HTTP_302_FOUND)
+    response = RedirectResponse(url="/login",
+                                status_code=status.HTTP_302_FOUND)
 
     # Clear the access_token cookie by setting it to expire immediately
     response.delete_cookie(
