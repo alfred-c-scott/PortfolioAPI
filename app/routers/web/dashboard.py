@@ -25,7 +25,7 @@ async def dashboard(request: Request,
 
         context = {
             'request': request,
-            'staff': current_user,
+            'current_user': current_user,
             'token_expires_in': token_expires_in
         }
 
