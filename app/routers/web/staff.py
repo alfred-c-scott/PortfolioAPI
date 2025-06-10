@@ -47,28 +47,6 @@ async def staff(request: Request,
         return RedirectResponse(url="/login?error=page_load_failed", status_code=status.HTTP_302_FOUND)
 
 
-@router.get('/{staff_id}', response_class=HTMLResponse)
-async def staff_member(request: Request,
-                        staff_id: int,
-                        db: Session = Depends(get_db),
-                        current_user: dict = Depends(oauth2.web_staff)):
-
-    try:
-        # Get token expiration from request state (set by middleware)
-        token_expires_in = getattr(request.state, 'token_expires_in', 0)
-
-        context = {
-            'request': request,
-            'current_user': current_user,
-            'token_expires_in': token_expires_in
-        }
-
-        return templates.TemplateResponse("staff_member.html", context)
-
-    except Exception as e:
-        return RedirectResponse(url="/login?error=page_load_failed", status_code=status.HTTP_302_FOUND)
-
-
 @router.get('/add_staff', response_class=HTMLResponse)
 async def add_staff_page(request: Request,
                          current_user: dict = Depends(oauth2.web_staff)):
@@ -184,3 +162,26 @@ async def create_staff(
         }
 
         return templates.TemplateResponse("add_staff.html", context)
+
+
+
+@router.get('/{staff_id}', response_class=HTMLResponse)
+async def staff_member(request: Request,
+                        staff_id: int,
+                        db: Session = Depends(get_db),
+                        current_user: dict = Depends(oauth2.web_staff)):
+
+    try:
+        # Get token expiration from request state (set by middleware)
+        token_expires_in = getattr(request.state, 'token_expires_in', 0)
+
+        context = {
+            'request': request,
+            'current_user': current_user,
+            'token_expires_in': token_expires_in
+        }
+
+        return templates.TemplateResponse("staff_member.html", context)
+
+    except Exception as e:
+        return RedirectResponse(url="/login?error=page_load_failed", status_code=status.HTTP_302_FOUND)
