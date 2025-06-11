@@ -17,15 +17,12 @@ def test_user_exists():
 
     db = SessionLocal()
     user = db.query(Staff).filter(Staff.email == username).first()
-    print(f"User found: {user is not None}")
-    if user:
-        print(f"User details: {user.email}, {user.username}")
-    db.close()
     assert user is not None
 
 
 def test_login_path():
     response = client.get("/login")
+    assert response.url.path == "/login"
     assert response.status_code == status.HTTP_200_OK
 
 
@@ -35,9 +32,8 @@ def test_login_success():
                           follow_redirects=True)
 
     assert response.status_code == status.HTTP_200_OK
-    assert "Dashboard" in response.text
-    # Check that we got redirected to dashboard
     assert response.url.path == "/dashboard"
+    assert "Dashboard" in response.text
 
 
 def test_bad_password():
@@ -46,6 +42,7 @@ def test_bad_password():
                           follow_redirects=True)
 
     assert response.status_code == status.HTTP_200_OK
+    assert response.url.path == "/login"
     assert "Invalid credentials" in response.text
 
 
@@ -55,6 +52,7 @@ def test_bad_username():
                           follow_redirects=True)
 
     assert response.status_code == status.HTTP_200_OK
+    assert response.url.path == "/login"
     assert "Invalid credentials" in response.text
 
 
@@ -64,4 +62,21 @@ def test_bad_username_bad_password():
                           follow_redirects=True)
 
     assert response.status_code == status.HTTP_200_OK
+    assert response.url.path == "/login"
     assert "Invalid credentials" in response.text
+
+
+def test_logout():
+    response = client.post("/login",
+                          data={"username": username, "password": password},
+                          follow_redirects=True)
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.url.path == "/dashboard"
+    assert "Dashboard" in response.text
+
+    response = client.get("/logout", follow_redirects=True)
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.url.path == "/login"
+    assert "Login" in response.text
