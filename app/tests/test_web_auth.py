@@ -1,9 +1,12 @@
 # app/tests/test_web_auth.py
+import time
+from datetime import datetime, timedelta
 from fastapi import status
 from fastapi.testclient import TestClient
 
 from app.main import app
-from app.tests import config
+from app.tests.config import username
+from app.tests.config import password
 
 client = TestClient(app)
 
@@ -13,7 +16,7 @@ def test_user_exists():
     from app.models import Staff
 
     db = SessionLocal()
-    user = db.query(Staff).filter(Staff.email == "alfred@gigavend.com").first()
+    user = db.query(Staff).filter(Staff.email == username).first()
     print(f"User found: {user is not None}")
     if user:
         print(f"User details: {user.email}, {user.username}")
@@ -28,27 +31,37 @@ def test_login_path():
 
 def test_login_success():
     response = client.post("/login",
-                          data={"username": "alfred@gigavend.com", "password": "password123"},
+                          data={"username": username, "password": password},
                           follow_redirects=True)
+
     assert response.status_code == status.HTTP_200_OK
     assert "Dashboard" in response.text
     # Check that we got redirected to dashboard
     assert response.url.path == "/dashboard"
 
 
-# def test_dashboard_to_staff_navigation():
-#     # Login first
-#     login_response = client.post("/login", data={"username": "alfred@gigavend.com", "password": "password123"})
+def test_bad_password():
+    response = client.post("/login",
+                          data={"username": username, "password": "wrong_password"},
+                          follow_redirects=True)
 
-#     # Set cookies on the client instead of passing them per request
-#     client.cookies = login_response.cookies
+    assert response.status_code == status.HTTP_200_OK
+    assert "Invalid credentials" in response.text
 
-#     # Go to dashboard (no cookies parameter needed)
-#     dashboard_response = client.get("/dashboard")
-#     assert dashboard_response.status_code == status.HTTP_200_OK
-#     assert "Manage Staff" in dashboard_response.text
 
-#     # "Click" the link by making a GET request to /staff (no cookies parameter needed)
-#     staff_response = client.get("/staff")
-#     assert staff_response.status_code == status.HTTP_200_OK
-#     assert "Manage Staff Members" in staff_response.text  # Content from staff.html
+def test_bad_username():
+    response = client.post("/login",
+                          data={"username": "wrong_username", "password": password},
+                          follow_redirects=True)
+
+    assert response.status_code == status.HTTP_200_OK
+    assert "Invalid credentials" in response.text
+
+
+def test_bad_username_bad_password():
+    response = client.post("/login",
+                          data={"username": "wrong_username", "password": "wrong_password"},
+                          follow_redirects=True)
+
+    assert response.status_code == status.HTTP_200_OK
+    assert "Invalid credentials" in response.text
