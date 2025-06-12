@@ -16,6 +16,10 @@
             Failed to activate staff member. Please try again.
         {% elif error == "deactivation_failed" %}
             Failed to deactivate staff member. Please try again.
+        {% elif error == "cannot_modify_self" %}
+            You cannot modify your own permissions.
+        {% elif error == "permissions_update_failed" %}
+            Failed to update permissions. Please try again.
         {% else %}
             {{ error }}
         {% endif %}
@@ -29,6 +33,8 @@
             Staff member activated successfully!
         {% elif success == "deactivated" %}
             Staff member deactivated successfully!
+        {% elif success == "permissions_updated" %}
+            Permissions updated successfully!
         {% else %}
             Staff member updated successfully!
         {% endif %}
@@ -183,6 +189,17 @@
                         <i class="bi bi-archive"></i> Archive
                     </button>
                 </div>
+            </form>
+
+            <!-- Hidden form for permissions submission -->
+            <form id="permissionsForm" method="POST" action="/staff/{{ staff.id }}/permissions" style="display: none;">
+                <input type="checkbox" name="is_staff" id="perm_is_staff">
+                <input type="checkbox" name="is_tech" id="perm_is_tech">
+                {% if current_user.is_superuser %}
+                <input type="checkbox" name="is_manager" id="perm_is_manager">
+                <input type="checkbox" name="is_admin" id="perm_is_admin">
+                <input type="checkbox" name="is_superuser" id="perm_is_superuser">
+                {% endif %}
             </form>
         </div>
     </div>
@@ -402,6 +419,31 @@ function checkPermissionChanges() {
 
 // Add event listener to permissions modal trigger
 document.querySelector('[data-bs-target="#permissionsModal"]').addEventListener('click', checkPermissionChanges);
+
+// Handle Set Permissions button click
+document.getElementById('setPermissionsBtn').addEventListener('click', function() {
+    // Copy current checkbox states to hidden form
+    document.getElementById('perm_is_staff').checked = document.getElementById('is_staff').checked;
+    document.getElementById('perm_is_tech').checked = document.getElementById('is_tech').checked;
+
+    // Copy manager, admin, superuser if they exist
+    const managerCheckbox = document.getElementById('is_manager');
+    const adminCheckbox = document.getElementById('is_admin');
+    const superuserCheckbox = document.getElementById('is_superuser');
+
+    if (managerCheckbox) {
+        document.getElementById('perm_is_manager').checked = managerCheckbox.checked;
+    }
+    if (adminCheckbox) {
+        document.getElementById('perm_is_admin').checked = adminCheckbox.checked;
+    }
+    if (superuserCheckbox) {
+        document.getElementById('perm_is_superuser').checked = superuserCheckbox.checked;
+    }
+
+    // Submit the hidden permissions form
+    document.getElementById('permissionsForm').submit();
+});
 </script>
 
 

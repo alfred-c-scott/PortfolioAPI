@@ -243,3 +243,58 @@ async def deactivate_staff(request: Request,
         db.rollback()
         return RedirectResponse(url=f"/staff/{staff_id}?error=deactivation_failed",
                               status_code=status.HTTP_302_FOUND)
+
+
+@router.post('/{staff_id}/permissions', response_class=HTMLResponse)
+async def update_permissions(request: Request,
+                             staff_id: int,
+                             is_staff: bool = Form(False),
+                             is_tech: bool = Form(False),
+                             is_manager: bool = Form(False),
+                             is_admin: bool = Form(False),
+                             is_superuser: bool = Form(False),
+                             db: Session = Depends(get_db),
+                             current_user: dict = Depends(oauth2.web_staff)):
+
+    try:
+        staff = db.query(models.Staff).filter(models.Staff.id == staff_id).first()
+        if not staff:
+            return RedirectResponse(url="/staff", status_code=status.HTTP_302_FOUND)
+
+        if staff.id == current_user['id']:
+            return RedirectResponse(url=f"/staff/{staff_id}?error=cannot_modify_self",
+                                  status_code=status.HTTP_302_FOUND)
+
+        if not current_user['is_superuser']:
+            is_manager = False
+            is_admin = False
+            is_superuser = False
+
+        staff.is_staff = is_staff
+        staff.is_tech = is_tech
+        staff.is_manager = is_manager
+        staff.is_admin = is_admin
+        staff.is_superuser = is_superuser
+
+        if staff.is_superuser:
+            staff.is_admin = True
+            staff.is_manager = True
+            staff.is_staff = True
+            staff.is_tech = True
+        elif staff.is_admin:
+            staff.is_manager = True
+            staff.is_staff = True
+            staff.is_tech = True
+        elif staff.is_manager:
+            staff.is_staff = True
+            staff.is_tech = True
+
+        db.commit()
+
+        return RedirectResponse(url=f"/staff/{staff_id}?success=permissions_updated",
+                                status_code=status.HTTP_303_SEE_OTHER)
+
+    except Exception as e:
+        db.rollback()
+        return RedirectResponse(url=f"/staff/{staff_id}?error=permissions_update_failed",
+                                status_code=status.HTTP_302_FOUND)
