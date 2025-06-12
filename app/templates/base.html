@@ -110,13 +110,52 @@
         }
     </style>
     <style>
+        :root {
+            --bs-warning: #CC6600;
+            --bs-warning-rgb: 207, 109, 40;
+        }
+
+        .btn-warning {
+            --bs-btn-bg: #CC6600;
+            --bs-btn-border-color: #CC6600;
+            --bs-btn-hover-bg: #A55520;
+            --bs-btn-hover-border-color: #A55520;
+            --bs-btn-active-bg: #A55520;
+            --bs-btn-active-border-color: #A55520;
+            --bs-btn-color: #fff;
+        }
+
+        .text-warning {
+            color: #CC6600 !important;
+        }
+
+        .bg-warning {
+            background-color: #CC6600 !important;
+        }
+
+        .border-warning {
+            border-color: #CC6600 !important;
+        }
+
+        .badge.bg-warning {
+            background-color: #CC6600 !important;
+            color: #fff !important;
+        }
+
+        .alert-warning {
+            color: #CC6600;
+            background-color: #fdf2e9;
+            border-color: #CC6600;
+        }
+    </style>
+    <style>
         /*
         Flash of unstyled content (FOUC) fix
         */
         html, body {
             background-color: rgb(54, 54, 54) !important;
             color: #ffffff !important;
-    }
+        }
     </style>
 </head>
 <body>
@@ -282,7 +321,7 @@ class TokenTimeoutManager {
     }
 
     cancelRefresh() {
-        console.log('User cancelled token refresh, redirecting to login');
+        console.log('User cancelled token refresh, logging out...');
 
         // Clear intervals
         this.clearIntervals();
@@ -290,8 +329,8 @@ class TokenTimeoutManager {
         // Hide modal
         this.modal.hide();
 
-        // Redirect to login page immediately
-        window.location.href = '/login';
+        // Redirect to logout endpoint to properly clear the cookie
+        window.location.href = '/logout';
     }
 
     clearIntervals() {
