@@ -167,6 +167,8 @@ async def create_staff(
 @router.get('/{staff_id}', response_class=HTMLResponse)
 async def staff_member(request: Request,
                        staff_id: int,
+                       success: str = None,  # Query parameter for success messages
+                       error: str = None,    # Query parameter for error messages
                        db: Session = Depends(get_db),
                        current_user: dict = Depends(oauth2.web_staff)):
 
@@ -182,10 +184,62 @@ async def staff_member(request: Request,
             'request': request,
             'current_user': current_user,
             'staff': staff,
-            'token_expires_in': token_expires_in
+            'token_expires_in': token_expires_in,
+            'success': success,  # Pass success message to template
+            'error': error       # Pass error message to template
         }
 
         return templates.TemplateResponse(request=request, name="staff_member.html", context=context)
 
     except Exception as e:
         return RedirectResponse(url="/login?error=page_load_failed", status_code=status.HTTP_302_FOUND)
+
+
+@router.post('/{staff_id}/activate', response_class=HTMLResponse)
+async def activate_staff(request: Request,
+                        staff_id: int,
+                        db: Session = Depends(get_db),
+                        current_user: dict = Depends(oauth2.web_staff)):
+    try:
+        staff = db.query(models.Staff).filter(models.Staff.id == staff_id).first()
+
+        if not staff:
+            return RedirectResponse(url="/staff", status_code=status.HTTP_302_FOUND)
+
+        staff.password = utils.hash('password123')
+        staff.staff_reset = False
+        staff.is_active = True
+        db.commit()
+
+        return RedirectResponse(url=f"/staff/{staff_id}?success=activated",
+                              status_code=status.HTTP_303_SEE_OTHER)
+
+    except Exception as e:
+        db.rollback()
+        return RedirectResponse(url=f"/staff/{staff_id}?error=activation_failed",
+                              status_code=status.HTTP_302_FOUND)
+
+
+@router.post('/{staff_id}/deactivate', response_class=HTMLResponse)
+async def deactivate_staff(request: Request,
+                          staff_id: int,
+                          db: Session = Depends(get_db),
+                          current_user: dict = Depends(oauth2.web_staff)):
+    try:
+        staff = db.query(models.Staff).filter(models.Staff.id == staff_id).first()
+
+        if not staff:
+            return RedirectResponse(url="/staff", status_code=status.HTTP_302_FOUND)
+
+        staff.password = utils.hash('password123')
+        staff.staff_reset = True
+        staff.is_active = False
+        db.commit()
+
+        return RedirectResponse(url=f"/staff/{staff_id}?success=deactivated",
+                              status_code=status.HTTP_303_SEE_OTHER)
+
+    except Exception as e:
+        db.rollback()
+        return RedirectResponse(url=f"/staff/{staff_id}?error=deactivation_failed",
+                              status_code=status.HTTP_302_FOUND)
