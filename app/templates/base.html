@@ -61,6 +61,63 @@
             background-color: rgba(255, 255, 255, 0.1) !important;
         }
     </style>
+    <style>
+        .edit-icon {
+            color: #198754 !important;
+            border-color: #198754 !important;
+        }
+
+        .edit-icon:hover {
+            background-color: #198754 !important;
+            color: white !important;
+        }
+    </style>
+    <style>
+        :root {
+            --bs-danger: #892324;
+            --bs-danger-rgb: 137, 35, 36;
+        }
+
+        .btn-danger {
+            --bs-btn-bg: #892324;
+            --bs-btn-border-color: #892324;
+            --bs-btn-hover-bg: #6d1d1e;
+            --bs-btn-hover-border-color: #6d1d1e;
+            --bs-btn-active-bg: #6d1d1e;
+            --bs-btn-active-border-color: #6d1d1e;
+        }
+
+        .text-danger {
+            color: #892324 !important;
+        }
+
+        .bg-danger {
+            background-color: #892324 !important;
+        }
+
+        .border-danger {
+            border-color: #892324 !important;
+        }
+
+        .badge.bg-danger {
+            background-color: #892324 !important;
+        }
+
+        .alert-danger {
+            color: #892324;
+            background-color: #f8d7da;
+            border-color: #892324;
+        }
+    </style>
+    <style>
+        /*
+        Flash of unstyled content (FOUC) fix
+        */
+        html, body {
+            background-color: rgb(54, 54, 54) !important;
+            color: #ffffff !important;
+    }
+    </style>
 </head>
 <body>
 
@@ -75,9 +132,9 @@
                 <p>Your session will expire in <span id="timeRemaining">60</span> seconds.</p>
                 <p>Would you like to extend your session?</p>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="cancelRefresh">Cancel</button>
-                <button type="button" class="btn btn-primary" id="refreshToken">OK - Extend Session</button>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-danger" id="cancelRefresh">NO - Log Out Now</button>
+                <button type="button" class="btn btn-success" id="refreshToken">OK - Extend Session</button>
             </div>
         </div>
     </div>
@@ -225,7 +282,7 @@ class TokenTimeoutManager {
     }
 
     cancelRefresh() {
-        console.log('User cancelled token refresh');
+        console.log('User cancelled token refresh, redirecting to login');
 
         // Clear intervals
         this.clearIntervals();
@@ -233,8 +290,8 @@ class TokenTimeoutManager {
         // Hide modal
         this.modal.hide();
 
-        // User chose not to refresh - token will expire naturally
-        // The existing middleware will handle the redirect when token expires
+        // Redirect to login page immediately
+        window.location.href = '/login';
     }
 
     clearIntervals() {

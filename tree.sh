@@ -1,1 +1,1 @@
-tree -I '.venv|__pycache__'
+tree -I '.venv|__pycache__' > tree.txt

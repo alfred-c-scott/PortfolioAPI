@@ -31,7 +31,7 @@ async def staff(request: Request,
         token_expires_in = getattr(request.state, 'token_expires_in', 0)
 
         staff = db.query(models.Staff).all()
-        print(staff)
+        # print(staff)
 
         context = {
             'request': request,
@@ -164,24 +164,28 @@ async def create_staff(
         return templates.TemplateResponse("add_staff.html", context)
 
 
-
 @router.get('/{staff_id}', response_class=HTMLResponse)
 async def staff_member(request: Request,
-                        staff_id: int,
-                        db: Session = Depends(get_db),
-                        current_user: dict = Depends(oauth2.web_staff)):
+                       staff_id: int,
+                       db: Session = Depends(get_db),
+                       current_user: dict = Depends(oauth2.web_staff)):
 
     try:
-        # Get token expiration from request state (set by middleware)
+        staff = db.query(models.Staff).filter(models.Staff.id == staff_id).first()
+
+        if not staff:
+            return RedirectResponse(url="/staff", status_code=status.HTTP_302_FOUND)
+
         token_expires_in = getattr(request.state, 'token_expires_in', 0)
 
         context = {
             'request': request,
             'current_user': current_user,
+            'staff': staff,
             'token_expires_in': token_expires_in
         }
 
-        return templates.TemplateResponse("staff_member.html", context)
+        return templates.TemplateResponse(request=request, name="staff_member.html", context=context)
 
     except Exception as e:
         return RedirectResponse(url="/login?error=page_load_failed", status_code=status.HTTP_302_FOUND)

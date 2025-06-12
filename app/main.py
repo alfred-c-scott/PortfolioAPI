@@ -48,8 +48,8 @@ app.add_middleware(
 # Add before other middleware
 app.add_middleware(NoCacheMiddleware)
 # Order matters! Token refresh should happen AFTER auth check but BEFORE response
-app.add_middleware(TokenRefreshMiddleware)     # Second - handles token refresh
 app.add_middleware(TokenExpirationMiddleware)  # First - handles authentication
+app.add_middleware(TokenRefreshMiddleware)     # Second - handles token refresh
 
 app.include_router(api_auth.router)
 app.include_router(api_locations.router)
